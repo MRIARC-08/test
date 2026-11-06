@@ -67,3 +67,14 @@ func (c *ShardedCache) Delete(key string) {
 
 	delete(shard.items, key)
 }
+
+// Len returns the total number of items across all shards.
+func (c *ShardedCache) Len() int {
+	total := 0
+	for _, shard := range c.shards {
+		shard.mu.RLock()
+		total += len(shard.items)
+		shard.mu.RUnlock()
+	}
+	return total
+}
